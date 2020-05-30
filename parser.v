@@ -8,6 +8,7 @@ import strconv
 
 pub fn parse(fname string) map[string]map[string]string {
   mut retv := map[string]map[string]string
+  retv['global'] = map[string]string
   tokens := tokenize(fname)
 
   /*
