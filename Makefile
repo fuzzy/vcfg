@@ -1,6 +1,8 @@
 VFLAGS=-stats
 
-all:
+all: build test
+
+build:
 	@echo 'building shared library'
 	v $(VFLAGS) -shared .
 
@@ -11,5 +13,5 @@ prod:
 clean:
 	rm -fv vcfg.so
 
-test:
+test: 
 	v -stats test .
