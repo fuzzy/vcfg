@@ -4,8 +4,10 @@
 
 module vcfg
 
-pub fn parse(fname string) map[string]string {
-  mut retv := map[string]string{}
+import strconv
+
+pub fn parse(fname string) map[string]map[string]string {
+  mut retv := map[string]map[string]string
   tokens := tokenize(fname)
 
   /*
@@ -15,12 +17,13 @@ pub fn parse(fname string) map[string]string {
    * greatly simplifies the code, but it also prevents undefined
    * variable errors from popping up.
    */
-  mut comment := false    // flag comment lines
-  mut assignment := false // flag assignment lines
-  mut section := 'global' // the current section
-  mut last := string{}    // the last token processed
-  mut index := 0          // the index of the current token
-  mut vindex := -1        // the index of the start of our value
+  mut comment := false     // flag comment lines
+  mut assignment := false  // flag assignment lines
+  mut section := 'global'  // the current section
+  mut buffer := []string{} // buffer for current value
+  mut last := string{}     // the last token processed
+  mut index := 0           // the index of the current token
+  mut vindex := -1         // the index of the start of our value
 
   // now we can start to process our tokens
   for tkn in tokens {
@@ -29,29 +32,36 @@ pub fn parse(fname string) map[string]string {
       // now that we've hit the newline
       if tkn == 'NL_TOK' {
         comment = false
-        println('DBG: Comment ended') // TODO:REMOVE 
+      }
+    } else if assignment {
+      if tkn == 'NL_TOK' {
+        value := buffer.join(' ').clone()
+        retv[section][last] = strconv.v_sprintf('%s', value)
+        assignment = false
+        buffer = []string{}
+      } else {
+        buffer << tkn
       }
     } else {
       // detect start-of-comment tokens 
       // TODO:FEATURE make this configurable 
       if tkn == '#' || tkn == ';;' {
         comment = true
-        println('DBG: Comment started') // TODO:REMOVE 
       } else if tkn[0] == byte(`[`) {
         // section name parsing could probably be done better
         section = tkn.split('[')[1].split(']')[0]
+        retv[section] = map[string]string
       } else if tkn == '=' {
         // basic ini style assignment
         vindex = index++  // set our value starting index
         assignment = true // flag assignment state 
-        println('DBG: new key for section( $section ) = $last') // TODO:REMOVE
       }
     }
-    last = tkn
+    if !assignment {
+      last = tkn
+    }
     index++
   }
 
-  println('DBG: $retv')
-  println('DBG: $tokens')
   return retv
 }
