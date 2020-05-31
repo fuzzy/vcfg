@@ -24,7 +24,9 @@ import vcfg
 fn main() {
   cfg := vcfg.new_parser('config.ini', true, true)
   cfg.parse()
-  println(cfg.data['dirs']['cache'])
+  println(cfg.get_item('dirs', 'cache'))
+  cfg.set_item('dirs', 'foo', 'bar')
+  println(cfg.get_item('dirs', 'foo'))
 }
 ```
 
@@ -32,5 +34,6 @@ would print:
 
 ```
 /home/username/.local/myapp/cache
+foo
 ```
 
