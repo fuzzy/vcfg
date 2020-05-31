@@ -22,7 +22,7 @@ module main
 import vcfg
 
 fn main() {
-  cfg := vcfg.new_parser('config.ini', true, false)
+  cfg := vcfg.new_parser('config.ini', true, true)
   cfg.parse()
   println(cfg.data['dirs']['cache'])
 }
