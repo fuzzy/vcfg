@@ -1,6 +1,7 @@
 import fuzzy.vcfg
 
 fn test_global_string_value() {
-  data := vcfg.parse('example.ini')
-  assert data['global']['test'] == 'test'
+  cfg := vcfg.new_parser('example.ini', false, false)
+  cfg.parse()
+  assert cfg.data['global']['test'] == 'test'
 }
