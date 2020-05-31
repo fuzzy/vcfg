@@ -5,6 +5,17 @@ environment variable interpolation.
 
 See the example.ini file for more information about the planned syntax.
 
+## Building
+
+```sh
+mkdir -p ~/.vmodules/fuzzy
+cd ~/.vmodules/fuzzy
+git clone https://github.com/fuzzy/vcfg
+make
+```
+
+## Example
+
 Using the config file as config.ini:
 
 ```ini
