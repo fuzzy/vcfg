@@ -11,7 +11,7 @@ Using the config file as config.ini:
 base_dir = /home/username/.local
 
 [dirs]
-cache = {global:base_dir}/myapp/cache
+cache = {base_dir}/myapp/cache
 ```
 
 and the following code:
