@@ -43,3 +43,9 @@ fn test_unsafe_env_interpolation() {
   cfg := data_setup()
   assert cfg.get_item('test', 'unsafe_env') == os.getenv('HOME')
 }
+
+fn test_value_set_with_interpolation() {
+  cfg := data_setup()
+  cfg.set_item('test', 'interkey', '{test}')
+  assert cfg.get_item('test', 'interkey') == 'testval'
+}
