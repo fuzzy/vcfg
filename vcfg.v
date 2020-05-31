@@ -4,20 +4,54 @@
 
 module vcfg
 
-import strconv
+import os
 
-pub fn parse(fname string) map[string]map[string]string {
-  mut retv := map[string]map[string]string
-  retv['global'] = map[string]string
-  tokens := tokenize(fname)
+pub struct Vcfg {
+mut:
+  contents string
+  tokens   []string
+  data     map[string]map[string]string
+pub:
+  file   string
+  interp bool
+  danger bool
+}
 
-  /*
-   * Some tracking variables help turn this into a simple
-   * state machine. We don't need to track much as we aren't 
-   * doing variable interpolation at this phase. That not only
-   * greatly simplifies the code, but it also prevents undefined
-   * variable errors from popping up.
-   */
+pub fn new_parser(f string, i, u bool) &Vcfg {
+  if !os.exists(f) {
+    panic('Specified file does not exist.')
+  }
+  return &Vcfg{
+    contents: os.read_file(f),
+    tokens: []string{},
+    data: map[string]map[string]string
+    file: f,
+    interp: i,
+    danger: u
+  }
+}
+
+fn (mut cf Vcfg) tokenize() {
+  cf.contents = os.read_file(cf.file) or {
+    panic('$err')
+  }
+  data_l := cf.contents.split('\n')
+  cf.tokens = []string{}
+  for lne in data_l {
+    for tok in lne.split(' ') {
+      if tok.len >= 1 {
+        cf.tokens << tok
+      }
+    }
+    cf.tokens << 'NL_TOK'
+  }
+}
+
+
+pub fn (mut cf Vcfg) parse() {
+  cf.data['global'] = map[string]string
+  cf.tokenize()
+
   mut comment := false     // flag comment lines
   mut assignment := false  // flag assignment lines
   mut section := 'global'  // the current section
@@ -27,7 +61,7 @@ pub fn parse(fname string) map[string]map[string]string {
   mut vindex := -1         // the index of the start of our value
 
   // now we can start to process our tokens
-  for tkn in tokens {
+  for tkn in cf.tokens {
     if comment {
       // since we know we're in a comment, let's clear the flag
       // now that we've hit the newline
@@ -36,8 +70,8 @@ pub fn parse(fname string) map[string]map[string]string {
       }
     } else if assignment {
       if tkn == 'NL_TOK' {
-        value := buffer.join(' ').clone()
-        retv[section][last] = strconv.v_sprintf('%s', value)
+        value := buffer.join(' ')
+        cf.data[section][last] = value
         assignment = false
         buffer = []string{}
       } else {
@@ -51,7 +85,7 @@ pub fn parse(fname string) map[string]map[string]string {
       } else if tkn[0] == byte(`[`) {
         // section name parsing could probably be done better
         section = tkn.split('[')[1].split(']')[0]
-        retv[section] = map[string]string
+        cf.data[section] = map[string]string
       } else if tkn == '=' {
         // basic ini style assignment
         vindex = index++  // set our value starting index
@@ -63,6 +97,5 @@ pub fn parse(fname string) map[string]map[string]string {
     }
     index++
   }
-
-  return retv
 }
+
