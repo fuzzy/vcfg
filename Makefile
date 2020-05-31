@@ -1,12 +1,12 @@
 VFLAGS=-stats
 
-all: build test
+all: build
 
-build:
+build: test
 	@echo 'building shared library'
 	v $(VFLAGS) -shared .
 
-prod:
+prod: test
 	@echo 'building shared library (prod)'
 	v $(VFLAGS) -shared -prod . 
 
