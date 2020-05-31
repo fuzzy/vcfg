@@ -10,6 +10,7 @@ pub struct Vcfg {
 mut:
   contents string
   tokens   []string
+pub mut:
   data     map[string]map[string]string
 pub:
   file   string
@@ -21,8 +22,11 @@ pub fn new_parser(f string, i, u bool) &Vcfg {
   if !os.exists(f) {
     panic('Specified file does not exist.')
   }
+  data_t :=os.read_file(f) or {
+    panic('$err')
+  }
   return &Vcfg{
-    contents: os.read_file(f),
+    contents: data_t,
     tokens: []string{},
     data: map[string]map[string]string
     file: f,
@@ -32,11 +36,7 @@ pub fn new_parser(f string, i, u bool) &Vcfg {
 }
 
 fn (mut cf Vcfg) tokenize() {
-  cf.contents = os.read_file(cf.file) or {
-    panic('$err')
-  }
   data_l := cf.contents.split('\n')
-  cf.tokens = []string{}
   for lne in data_l {
     for tok in lne.split(' ') {
       if tok.len >= 1 {
