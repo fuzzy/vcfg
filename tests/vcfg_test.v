@@ -9,25 +9,37 @@ fn data_setup() &vcfg.Vcfg {
 
 fn test_global_string_value() {
   cfg := data_setup()
-  assert cfg.data['global']['test'] == 'testval'
+  assert cfg.get_item('global', 'test') == 'testval'
+}
+
+fn test_global_string_set_value() {
+  cfg := data_setup()
+  cfg.set_item('global', 'dynamic', 'test')
+  assert cfg.get_item('global', 'dynamic') == 'test'
 }
 
 fn test_section_string_value() {
   cfg := data_setup()
-  assert cfg.data['test']['test'] == 'test'
+  assert cfg.get_item('test', 'test') == 'test'
 }
 
-fn test_section_string_interpolated_value() {
+fn test_section_string_set_value() {
   cfg := data_setup()
-  assert cfg.data['test']['interpolation'] == 'testval'
+  cfg.set_item('test', 'newkey', 'value')
+  assert cfg.get_item('test', 'newkey') == 'value'
 }
 
-fn test_section_string_interpolated_value_implied_global_section() {
+fn test_interpolated_string_value() {
   cfg := data_setup()
-  assert cfg.data['test']['implied_global'] == 'testval'
+  assert cfg.get_item('test', 'interpolation') == 'testval'
+}
+
+fn test_interpolated_implied_global_section_string_value() {
+  cfg := data_setup()
+  assert cfg.get_item('test', 'implied_global') == 'testval'
 }
 
 fn test_unsafe_env_interpolation() {
   cfg := data_setup()
-  assert cfg.data['test']['unsafe_env'] == os.getenv('HOME')
+  assert cfg.get_item('test', 'unsafe_env') == os.getenv('HOME')
 }

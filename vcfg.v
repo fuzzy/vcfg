@@ -10,7 +10,6 @@ pub struct Vcfg {
 mut:
   contents    string
   tokens      []string
-pub mut:
   data        map[string]map[string]string
 pub:
   file        string
@@ -33,6 +32,22 @@ pub fn new_parser(f string, i, u bool) &Vcfg {
     interpolate: i,
     danger: u
   }
+}
+
+pub fn (mut cf Vcfg) get_item(s, k string) string {
+  return cf.data[s][k]
+}
+
+pub fn (mut cf Vcfg) set_item(s, k, v string) {
+  cf.data[s][k] = v
+}
+
+pub fn (mut cf Vcfg) get_section(s string) map[string]string {
+  return cf.data[s]
+}
+
+pub fn (mut cf Vcfg) set_section(s string, v map[string]string) {
+  cf.data[s] = v
 }
 
 pub fn (mut cf Vcfg) parse() {
