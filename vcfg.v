@@ -40,6 +40,7 @@ pub fn (mut cf Vcfg) get_item(s, k string) string {
 
 pub fn (mut cf Vcfg) set_item(s, k, v string) {
   cf.data[s][k] = v
+  cf.analyzer()
 }
 
 pub fn (mut cf Vcfg) get_section(s string) map[string]string {
@@ -48,6 +49,7 @@ pub fn (mut cf Vcfg) get_section(s string) map[string]string {
 
 pub fn (mut cf Vcfg) set_section(s string, v map[string]string) {
   cf.data[s] = v
+  cf.analyzer()
 }
 
 pub fn (mut cf Vcfg) parse() {
