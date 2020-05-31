@@ -11,7 +11,7 @@ prod: test
 	v $(VFLAGS) -shared -prod . 
 
 clean:
-	rm -fv vcfg.so
+	rm -f vcfg.so
 
 test: 
 	v -stats test .
