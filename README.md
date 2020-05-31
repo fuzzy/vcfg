@@ -8,10 +8,10 @@ See the example.ini file for more information about the planned syntax.
 Using the config file as config.ini:
 
 ```ini
-key = global value
+base_dir = /home/username/.local
 
-[section]
-key = value
+[dirs]
+cache = {global:base_dir}/myapp/cache
 ```
 
 and the following code:
@@ -22,17 +22,15 @@ module main
 import vcfg
 
 fn main() {
-  cfg := vcfg.new_parser('config.ini', false, false)
+  cfg := vcfg.new_parser('config.ini', true, false)
   cfg.parse()
-  println(cfg.data['global']['key'])
-  println(cfg.data['section']['key'])
+  println(cfg.data['dirs']['cache'])
 }
 ```
 
 would print:
 
 ```
-global value
-value
+/home/username/.local/myapp/cache
 ```
 
