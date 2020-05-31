@@ -120,30 +120,35 @@ fn (mut cf Vcfg) do_parse() {
 	}
 }
 
+fn (mut cf Vcfg) interpolate_value(v string) string {
+	mut tkns := v.split(' ')
+	for idx, vvv in tkns {
+		if vvv[0] == `{` {
+			token := vvv.split('{')[1].split('}')[0]
+			if token.contains(':') {
+				tmp := token.split(':')
+				val := cf.data[tmp[0]][tmp[1]]
+				tkns[idx] = val
+			} else if token.contains('|') && cf.danger {
+				tmp := token.split('|')
+				if tmp[0] == 'env' {
+					tkns[idx] = os.getenv(tmp[1])
+				}
+			} else {
+				tkns[idx] = cf.data['global'][token]
+			}
+		}
+	}
+	return tkns.join(' ')
+}
+
 fn (mut cf Vcfg) analyzer() {
 	if cf.interpolate {
 		for k, v in cf.data {
 			for kk, vv in v {
-				mut tkns := vv.split(' ')
-				for idx, vvv in tkns {
-					if vvv[0] == `{` {
-						token := vvv.split('{')[1].split('}')[0]
-						if token.contains(':') {
-							tmp := token.split(':')
-							val := cf.data[tmp[0]][tmp[1]]
-							tkns[idx] = val
-						} else if token.contains('|') && cf.danger {
-							tmp := token.split('|')
-							if tmp[0] == 'env' {
-								tkns[idx] = os.getenv(tmp[1])
-							}
-						} else {
-							tkns[idx] = cf.data['global'][token]
-						}
-					}
-				}
-				if tkns != vv.split(' ') {
-					cf.data[k][kk] = tkns.join(' ')
+				ival := cf.interpolate_value(vv)
+				if ival != vv {
+					cf.data[k][kk] = ival
 				}
 			}
 		}
