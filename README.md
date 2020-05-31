@@ -8,7 +8,7 @@ See the example.ini file for more information about the planned syntax.
 Using the config file as config.ini:
 
 ```ini
-base_dir = /home/username/.local
+base_dir = {env|HOME}/.local
 
 [dirs]
 cache = {base_dir}/myapp/cache

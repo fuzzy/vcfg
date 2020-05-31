@@ -119,6 +119,11 @@ fn (mut cf Vcfg) analyzer() {
               tmp := token.split(':')
               val := cf.data[tmp[0]][tmp[1]]
               tkns[idx] = val
+            } else if token.contains('|') && cf.danger {
+              tmp := token.split('|')
+              if tmp[0] == 'env' {
+                tkns[idx] = os.getenv(tmp[1])
+              }
             } else {
               tkns[idx] = cf.data['global'][token]
             }

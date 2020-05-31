@@ -1,3 +1,4 @@
+import os
 import fuzzy.vcfg
 
 fn data_setup() &vcfg.Vcfg {
@@ -24,4 +25,9 @@ fn test_section_string_interpolated_value() {
 fn test_section_string_interpolated_value_implied_global_section() {
   cfg := data_setup()
   assert cfg.data['test']['implied_global'] == 'testval'
+}
+
+fn test_unsafe_env_interpolation() {
+  cfg := data_setup()
+  assert cfg.data['test']['unsafe_env'] == os.getenv('HOME')
 }
