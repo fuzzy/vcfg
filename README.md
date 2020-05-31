@@ -34,6 +34,6 @@ would print:
 
 ```
 /home/username/.local/myapp/cache
-foo
+bar
 ```
 
