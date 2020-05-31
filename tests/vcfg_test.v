@@ -8,7 +8,7 @@ fn data_setup() &vcfg.Vcfg {
 
 fn test_global_string_value() {
   cfg := data_setup()
-  assert cfg.data['global']['test'] == 'test'
+  assert cfg.data['global']['test'] == 'testval'
 }
 
 fn test_section_string_value() {
@@ -18,5 +18,10 @@ fn test_section_string_value() {
 
 fn test_section_string_interpolated_value() {
   cfg := data_setup()
-  assert cfg.data['test']['interpolation'] == 'test'
+  assert cfg.data['test']['interpolation'] == 'testval'
+}
+
+fn test_section_string_interpolated_value_implied_global_section() {
+  cfg := data_setup()
+  assert cfg.data['test']['implied_global'] == 'testval'
 }

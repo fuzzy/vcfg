@@ -119,6 +119,8 @@ fn (mut cf Vcfg) analyzer() {
               tmp := token.split(':')
               val := cf.data[tmp[0]][tmp[1]]
               tkns[idx] = val
+            } else {
+              tkns[idx] = cf.data['global'][token]
             }
           }
         }
