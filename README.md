@@ -36,6 +36,7 @@ fn main() {
   cfg := vcfg.new_parser('config.ini', true, true)
   cfg.parse()
   println(cfg.get_item('dirs', 'cache'))
+  println(cfg.get_global('base_dir'))
   cfg.set_item('dirs', 'foo', 'bar')
   println(cfg.get_item('dirs', 'foo'))
 }
@@ -45,6 +46,7 @@ would print:
 
 ```
 /home/username/.local/myapp/cache
+/home/username/.local
 bar
 ```
 
