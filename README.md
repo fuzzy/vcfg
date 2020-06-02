@@ -5,7 +5,13 @@ environment variable interpolation.
 
 See the example.ini file for more information about the planned syntax.
 
-## Building
+## Installing with VPM
+
+```sh
+v install fuzzy.vcfg
+```
+
+## Building manually
 
 ```sh
 mkdir -p ~/.vmodules/fuzzy
