@@ -1,9 +1,11 @@
 // Copyright 2020 Mike 'Fuzzy' Partin <fuzzy@thwap.org>
 // This code is released under the Copyfree Open Initiative License
 // See LICENSE.md for a copy of the license terms and conditions
+
 module vcfg
 
 import os
+import regex
 
 pub struct Vcfg {
 mut:
@@ -120,33 +122,50 @@ fn (mut cf Vcfg) do_parse() {
 	}
 }
 
-fn (mut cf Vcfg) interpolate_value(v string) string {
-	mut tkns := v.split(' ')
-	for idx, vvv in tkns {
-		if vvv[0] == `{` {
-			token := vvv.split('{')[1].split('}')[0]
-			if token.contains(':') {
-				tmp := token.split(':')
-				val := cf.data[tmp[0]][tmp[1]]
-				tkns[idx] = val
-			} else if token.contains('|') && cf.danger {
-				tmp := token.split('|')
-				if tmp[0] == 'env' {
-					tkns[idx] = os.getenv(tmp[1])
-				}
-			} else {
-				tkns[idx] = cf.data['global'][token]
-			}
-		}
-	}
-	return tkns.join(' ')
+fn find_all(s, p string) []string {
+  mut retv := []string{}
+  mut patt := regex.new_regex()
+
+  re_err, re_pos := patt.compile(p)
+  if re_err == regex.compile_ok {
+    matches := patt.find_all(s)
+    for i := 0; i < matches.len; i += 2 {
+      retv << s.substr(matches[i], matches[i+1])
+    }
+  } else {
+    panic('Error in pattern at pos: ${re_pos}')
+  }
+
+  return retv
+}
+
+fn (mut cf Vcfg) interpolate_values(v string) string {
+  mut retv := v
+  matches := find_all(v, '\{[a-zA-Z0-9_\:\|]*\}')
+
+  for vbl in matches {
+    token := vbl.split('{')[1].split('}')[0]
+    if vbl.contains(':') {
+      units := token.split(':')
+      retv = retv.replace(vbl, cf.data[units[0]][units[1]])
+    } else if vbl.contains('|') {
+      units := token.split('|')
+      if units[0] == 'env' {
+        retv = retv.replace(vbl, os.getenv(units[1]))
+      }
+    } else {
+      retv = retv.replace(vbl, cf.data['global'][token])
+    }
+  }
+
+  return retv
 }
 
 fn (mut cf Vcfg) analyzer() {
 	if cf.interpolate {
 		for k, v in cf.data {
 			for kk, vv in v {
-				ival := cf.interpolate_value(vv)
+				ival := cf.interpolate_values(vv)
 				if ival != vv {
 					cf.data[k][kk] = ival
 				}

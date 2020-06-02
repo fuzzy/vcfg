@@ -34,6 +34,11 @@ fn test_interpolated_string_value() {
   assert cfg.get_item('test', 'interpolation') == 'testval'
 }
 
+fn test_interpolated2_string_value() {
+  cfg := data_setup()
+  assert cfg.get_item('test', 'interpolation2') == 'testval/testval'
+}
+
 fn test_interpolated_implied_global_section_string_value() {
   cfg := data_setup()
   assert cfg.get_item('test', 'implied_global') == 'testval'
