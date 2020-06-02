@@ -7,6 +7,11 @@ fn data_setup() &vcfg.Vcfg {
   return cfg
 }
 
+fn test_get_global_string_value() {
+  cfg := data_setup()
+  assert cfg.get_global('test') == 'testval'
+}
+
 fn test_global_string_value() {
   cfg := data_setup()
   assert cfg.get_item('global', 'test') == 'testval'
