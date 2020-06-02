@@ -35,6 +35,10 @@ pub fn new_parser(f string, i, u bool) &Vcfg {
 	}
 }
 
+pub fn (mut cf Vcfg) get_global(s string) string {
+  return cf.data['global'][s]
+}
+
 pub fn (mut cf Vcfg) get_item(s, k string) string {
 	return cf.data[s][k]
 }
